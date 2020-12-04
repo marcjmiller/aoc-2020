@@ -10,34 +10,26 @@ const hclRegex = /hcl:(#[0-9a-f]{6})/i;
 const eclRegex = /ecl:(amb|blu|brn|gry|grn|hzl|oth)/i;
 const pidRegex = /pid:([0-9]{9})\b/i;
 
+function valueBetween(val: number, min: number, max: number) {
+  return min <= val && val <= max;
+}
+
 function validByr(byr: number) {
-  return 1920 <= byr && byr <= 2002;
+  return valueBetween(byr, 1920, 2002);
 }
 
 function validIyr(iyr: number) {
-  return 2010 <= iyr && iyr <= 2020;
+  return valueBetween(iyr, 2010, 2020);
 }
 
 function validEyr(eyr: number) {
-  return 2020 <= eyr && eyr <= 2030;
-}
-
-function validEcl(ecl: string) {
-  return !!ecl;
-}
-
-function validHcl(hcl: string) {
-  return !!hcl;
-}
-
-function validPid(pid: string) {
-  return !!pid;
+  return valueBetween(eyr, 2020, 2030);
 }
 
 function validHgt(hgt: string) {
-  if (hgt?.slice(-2) === 'cm') {
+  if (hgt?.indexOf('cm') !== -1) {
     return 150 <= +hgt.substring(0, hgt.length - 2) && +hgt.substring(0, hgt.length - 2) <= 193;
-  } else if (hgt?.slice(-2) === 'in') {
+  } else if (hgt?.indexOf('in') !== -1) {
     return 59 <= +hgt.substring(0, hgt.length - 2) && +hgt.substring(0, hgt.length - 2) <= 76;
   }
   return false;
@@ -56,42 +48,22 @@ function grokPassport(passport: string) {
 }
 
 function checkValid(passport: string) {
-  let isValid = true;
   const { byr, iyr, eyr, hgt, hcl, ecl, pid } = grokPassport(passport);
 
-  if (!byr || !validByr(byr)) {
-    isValid = false;
+  if (!byr || !iyr || !eyr || !hgt || !hcl || !ecl || !pid) {
+    return false;
   }
 
-  if (!iyr || !validIyr(iyr)) {
-    isValid = false;
+  if (!validByr(byr) || !validIyr(iyr) || !validEyr(eyr) || !validHgt(hgt)) {
+    return false;
   }
 
-  if (!eyr || !validEyr(eyr)) {
-    isValid = false;
-  }
-
-  if (!hgt || !validHgt(hgt)) {
-    isValid = false;
-  }
-
-  if (!hcl || !validHcl(hcl)) {
-    isValid = false;
-  }
-
-  if (!ecl || !validEcl(ecl)) {
-    isValid = false;
-  }
-
-  if (!pid || !validPid(pid)) {
-    isValid = false;
-  }
-
-  return isValid;
+  return true;
 }
 
 inputData.forEach((passport) => {
   const passportLength = passport.split(' ').length;
+
   if (passportLength >= 7) {
     if (checkValid(passport)) {
       validPassports++;
@@ -99,4 +71,4 @@ inputData.forEach((passport) => {
   }
 });
 
-console.log(validPassports);
+console.log(`Valid Passports: ${validPassports}`);
