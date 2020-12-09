@@ -48,24 +48,55 @@ function part1(data: string) {
   return count;
 }
 
-// TODO: Finish part2 when able.
-function part2(data: string) {
-  let countChildren = 0;
-  const bags = getBags(data);
+function getBagMap(bags: string[][]) {
+  const bagMap = new Map<string, [number, string][]>();
+  for (let bag of bags) {
+    let bagChildren: [number, string][] = [];
+    for (let subBag of bag.slice(1)) {
+      bagChildren.push([+subBag.slice(0, 1) || 1, subBag.replace(/[0-9] /g, '') || '']);
+    }
+    bagMap.set(bag[0], bagChildren);
+  }
+  return bagMap;
+}
 
-  console.log(bags);
+function countBags(bagName: string, bags: string[][], children: number = 0) {
+  const bagMap = getBagMap(bags);
+  const bagContents = bagMap.get(bagName);
+  if (bagContents) {
+    for (let i = 0; i < bagContents.length; i++) {
+      children += bagContents[i][0];
+      children += bagContents[i][0] * countBags(bagContents[i][1], bags);
+    }
+  }
+
+  return children;
+}
+
+function part2(data: string) {
+  const bags = getBags(data);
+  const countChildren = countBags('shiny gold', bags);
 
   return countChildren;
 }
 
-// const testDataCountPart1 = part1(testDataPart1);
-// console.log(`Test data part 1: ${testDataCountPart1 === 4 ? 'PASS' : 'FAIL'}\n`);
+const testDataCountPart1 = part1(testDataPart1);
+console.log(`Test data part 1: ${testDataCountPart1 === 4 ? 'PASS' : 'FAIL'}\n`);
 
-// const liveDataCountPart1 = part1(inputData);
-// console.log(`Live data count is: ${liveDataCountPart1}\n`);
+const liveDataCountPart1 = part1(inputData);
+console.log(`Live data count is: ${liveDataCountPart1}\n`);
 
 const testDataCountPart2Ex1 = part2(testDataPart1);
-console.log(`Test data part 2: ${testDataCountPart2Ex1} === 32 ? 'PASS' : 'FAIL'\n`);
+console.log(
+  `Test data part 2: ${testDataCountPart2Ex1} ${testDataCountPart2Ex1 === 32 ? 'PASS' : 'FAIL expected 32'}\n`
+);
 
 const testDataCountPart2Ex2 = part2(testDataPart2);
-console.log(`Test data part 2: ${testDataCountPart2Ex2} === 126 ? 'PASS' : 'FAIL'\n`);
+console.log(
+  `Test data part 2: ${testDataCountPart2Ex2} ${testDataCountPart2Ex2 === 126 ? 'PASS' : 'FAIL expected 126'}\n`
+);
+
+const testDataCountPart2live = part2(inputData);
+console.log(
+  `Live data part 2 count: ${testDataCountPart2live}`
+);
