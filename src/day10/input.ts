@@ -11,6 +11,7 @@ export const test1Data = `16
 4`;
 
 export const test1Solution = 35;
+export const test1Part2Solution = 8;
 
 export const test2Data = `28
 33
@@ -45,6 +46,7 @@ export const test2Data = `28
 3`;
 
 export const test2Solution = 220;
+export const test2Part2Solution = 19208;
 
 export const liveData = `111
 56

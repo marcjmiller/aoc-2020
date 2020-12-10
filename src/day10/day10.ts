@@ -1,12 +1,19 @@
-import { test1Data, test1Solution, test2Data, test2Solution, liveData } from './input';
+import {
+  test1Data,
+  test1Solution,
+  test1Part2Solution,
+  test2Data,
+  test2Solution,
+  test2Part2Solution,
+  liveData,
+} from './input';
 
 function grokInput(data: string) {
   const adapters: number[] = data
     .split('\n')
     .map((adapter) => parseInt(adapter))
     .sort((a, b) => a - b);
-  console.log(`sorted adapters: ${adapters}`);
-  return adapters;
+  return [0, ...adapters];
 }
 
 function parseAdapters(adapters: number[]) {
@@ -26,10 +33,28 @@ function parseAdapters(adapters: number[]) {
   return countOnes * countThrees;
 }
 
-function main(data: string, expectedValue?: number) {
-  const adapters = grokInput(data);
+function countArrangements(adapters: number[]) {
+  let paths = [1, ...Array(Math.max(...adapters)).fill(0)];
 
-  const calculatedValue = parseAdapters(adapters);
+  for (let i of adapters) {
+    for (let j of [1, 2, 3]) {
+      if (adapters.includes(i - j)) {
+        paths[i] = paths[i] + paths[i - j];
+      }
+    }
+  }
+  return paths[paths.length - 1];
+}
+
+function main(data: string, expectedValue?: number, part2?: boolean) {
+  const adapters = grokInput(data);
+  let calculatedValue = -1;
+
+  if (!part2) {
+    calculatedValue = parseAdapters(adapters);
+  } else {
+    calculatedValue = countArrangements(adapters);
+  }
 
   if (expectedValue) {
     console.log(
@@ -38,15 +63,24 @@ function main(data: string, expectedValue?: number) {
       }\n`
     );
   } else {
-    console.log(`Calculated value: ${calculatedValue}`);
+    console.log(`Calculated value: ${calculatedValue}\n`);
   }
 }
 
-console.log('---- Test1 ----');
+console.log('---- Part 1 Test 1 ----');
 main(test1Data, test1Solution);
 
-console.log('---- Test2 ----');
+console.log('---- Part 1 Test 2 ----');
 main(test2Data, test2Solution);
 
-console.log('---- Live ----');
+console.log('---- Part 1 Live ----');
 main(liveData);
+
+console.log('---- Part 2 Test 1 ----');
+main(test1Data, test1Part2Solution, true);
+
+console.log('---- Part 2 Test 2 ----');
+main(test2Data, test2Part2Solution, true);
+
+console.log('---- Part 2 Live ----');
+main(liveData, undefined, true);
