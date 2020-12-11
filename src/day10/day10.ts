@@ -21,12 +21,17 @@ function parseAdapters(adapters: number[]) {
   let countThrees = 1;
   let lastAdapter = 0;
 
+  // adapters = [1, 2, 4]
+
   for (let adapter of adapters) {
+    // adapter = 4, lastAdapter = 2
     if (adapter - lastAdapter === 1) {
       countOnes++;
     } else if (adapter - lastAdapter === 3) {
       countThrees++;
     }
+
+    // lastAdapter = 2
     lastAdapter = adapter;
   }
 
